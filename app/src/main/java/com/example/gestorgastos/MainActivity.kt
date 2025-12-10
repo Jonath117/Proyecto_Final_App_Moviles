@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.gestorgastos.ui.navigation.AppNavigation
 import com.example.gestorgastos.ui.screens.home.MainScreen
 import com.example.gestorgastos.ui.theme.GestorGastosTheme
 
@@ -21,9 +22,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             GestorGastosTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    MainScreen(modifier = Modifier.padding(innerPadding))
-                }
+                AppNavigation()
             }
         }
     }

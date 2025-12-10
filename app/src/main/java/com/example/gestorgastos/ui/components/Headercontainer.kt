@@ -17,7 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun HomeHeader(backgroundColor: Color) {
+fun HomeHeader(header: String, backgroundColor: Color) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -28,7 +28,7 @@ fun HomeHeader(backgroundColor: Color) {
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = "HOME",
+            text = header,
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
             color = Color.Black
