@@ -20,6 +20,7 @@ import com.example.gestorgastos.ui.screens.agregar_gasto.AddExpenseScreen
 import com.example.gestorgastos.ui.screens.home.HomeScreen
 import com.example.gestorgastos.ui.screens.agregar_categoria.AddCategoryScreen // <--- Asegura este import
 import com.example.gestorgastos.ui.screens.categories.CategoriesScreen // <--- Y este también
+import com.example.gestorgastos.ui.screens.profile.ProfileScreen
 
 @Composable
 fun AppNavigation() {
@@ -53,7 +54,9 @@ fun AppNavigation() {
             MyTopAppBar(
                 title = currentTitle,
                 canNavigateBack = canNavigateBack,
-                navigateUp = { navController.navigateUp() }
+                navigateUp = { navController.navigateUp() },
+                onProfileClick = { navController.navigate(Profile) }
+
             )
         },
         bottomBar = {
@@ -100,6 +103,12 @@ fun AppNavigation() {
                 AddCategoryScreen(
                     onBackClick = { navController.popBackStack() },
                     onSaveSuccess = { navController.popBackStack() }
+                )
+            }
+
+            composable<Profile> {
+                ProfileScreen(
+                    onBackClick = { navController.popBackStack() }
                 )
             }
         }

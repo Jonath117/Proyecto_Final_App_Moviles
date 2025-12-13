@@ -17,3 +17,6 @@ object AddCategory
 
 @Serializable
 object Reporte
+
+@Serializable
+object Profile

@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.material.icons.filled.AccountCircle
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -17,6 +18,7 @@ fun MyTopAppBar(
     title: String,
     canNavigateBack: Boolean,
     navigateUp: () -> Unit,
+    onProfileClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val SoftLav = Color(0xFFECE4F4)
@@ -40,6 +42,16 @@ fun MyTopAppBar(
                         contentDescription = "Volver"
                     )
                 }
+            }
+        },
+
+        actions = {
+            IconButton(onClick = onProfileClick) {
+                Icon(
+                    imageVector = Icons.Default.AccountCircle,
+                    contentDescription = "Perfil",
+                    tint = Color.Black // O el color que contraste con tu barra
+                )
             }
         }
     )
