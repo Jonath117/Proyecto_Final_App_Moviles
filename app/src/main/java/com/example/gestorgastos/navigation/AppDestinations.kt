@@ -20,3 +20,6 @@ object Reporte
 
 @Serializable
 object Profile
+
+@Serializable
+data class ExpenseDetail(val id: String)

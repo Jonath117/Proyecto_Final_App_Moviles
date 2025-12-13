@@ -1,5 +1,6 @@
 package com.example.gestorgastos.ui.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -65,12 +66,12 @@ import com.example.gestorgastos.domain.model.ExpenseItem
 //}
 //
 @Composable
-fun ExpenseItemCard(item: ExpenseItem, backgroundColor: Color) {
+fun ExpenseItemCard(item: ExpenseItem, backgroundColor: Color, onClick: () -> Unit) {
     Card(
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = backgroundColor),
         elevation = CardDefaults.cardElevation(0.dp),
-        modifier = Modifier.fillMaxWidth().height(70.dp)
+        modifier = Modifier.fillMaxWidth().height(70.dp).clickable { onClick() }
     ) {
         Row(
             modifier = Modifier

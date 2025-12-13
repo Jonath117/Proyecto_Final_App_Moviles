@@ -29,6 +29,7 @@ import com.example.gestorgastos.ui.components.MyTopAppBar
 fun HomeScreen(
     modifier: Modifier = Modifier,
     onFabClick: () -> Unit,
+    onExpenseClick: (String) -> Unit,
     viewModel: HomeViewModel = viewModel()
 ) {
     val expenses by viewModel.expenses.collectAsState()
@@ -74,7 +75,11 @@ fun HomeScreen(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     items(expenses) { expense ->
-                        ExpenseItemCard(item = expense, backgroundColor = CardBg)
+                        ExpenseItemCard(
+                            item = expense,
+                            backgroundColor = CardBg,
+                            onClick = {onExpenseClick(expense.id)}
+                        )
                     }
                 }
             }
