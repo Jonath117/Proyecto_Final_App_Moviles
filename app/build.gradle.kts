@@ -2,8 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    id("com.google.dagger.hilt.android") version "2.51.1" apply false
-    id("kotlin-kapt") // Necesario para procesar anotaciones
+    id("org.jetbrains.kotlin.plugin.serialization")
 }
 
 android {
@@ -54,6 +53,9 @@ dependencies {
     implementation(libs.androidx.compose.runtime)
     implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.compose.foundation.layout)
+    implementation(libs.androidx.material3)
+    implementation(libs.litert.support.api)
+    implementation(libs.androidx.room.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -61,13 +63,12 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
-    implementation("androidx.compose.material:material-icons-extended:1.6.0")
-    implementation("androidx.compose.ui:ui:1.6.0")
-    implementation("androidx.compose.ui:ui-graphics:1.6.0")
-    implementation("androidx.compose.material:material:1.6.0")
+    implementation(libs.androidx.compose.material.icons.extended)
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.compose.material)
 
-    implementation("com.google.dagger:hilt-android:2.51.1")
+    implementation("androidx.navigation:navigation-compose:2.9.6")
 
-    // Integración de Hilt con Navigation Compose (Muy importante para hiltViewModel())
-    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
 }
