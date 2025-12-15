@@ -5,6 +5,7 @@ data class ExpenseItem(
     val title: String,
     val amount: Double,
     val categoryName: String,
-    val date: Long
+    val date: Long,
+    val imageUris: List<String> = emptyList()
 
 )

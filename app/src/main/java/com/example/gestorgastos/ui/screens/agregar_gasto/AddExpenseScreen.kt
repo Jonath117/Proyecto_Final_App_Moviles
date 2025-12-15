@@ -1,5 +1,10 @@
 package com.example.gestorgastos.ui.screens.agregar_gasto
 
+import android.os.Build
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -11,7 +16,9 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AttachFile
 import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -23,11 +30,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.gestorgastos.ui.components.CategoryGridItem
 import com.example.gestorgastos.ui.components.LabeledTextField
 import com.example.gestorgastos.ui.screens.add_expense.AddExpenseViewModel
@@ -38,6 +47,8 @@ import java.util.Date
 import java.util.Locale
 
 import java.util.TimeZone
+import android.Manifest
+import androidx.compose.ui.platform.LocalContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -58,6 +69,37 @@ fun AddExpenseScreen(
     )
 
     val categoriesList by viewModel.categories.collectAsState()
+
+    val context = LocalContext.current
+
+    val photoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickMultipleVisualMedia(2) // Max 2 fotos
+    ) { uris ->
+        if (uris.isNotEmpty()) {
+            viewModel.onImagesSelected(uris)
+        }
+    }
+
+    // 2. Permiso Launcher (Determina cuál pedir según versión de Android)
+    val permissionToRequest = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        Manifest.permission.READ_MEDIA_IMAGES
+    } else {
+        Manifest.permission.READ_EXTERNAL_STORAGE
+    }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            // Si da permiso, abrimos la galería
+            photoPickerLauncher.launch(
+                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+            )
+        } else {
+            Toast.makeText(context, "Se requiere permiso para adjuntar fotos", Toast.LENGTH_SHORT).show()
+        }
+    }
+
 
     if (showDatePicker) {
         DatePickerDialog(
@@ -178,6 +220,64 @@ fun AddExpenseScreen(
                     modifier = Modifier.size(32.dp),
                     tint = Color.Black
                 )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+
+        Text("Adjuntar Recibo (Máx 2)", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = Color.Black)
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            // Botón para agregar (Siempre visible si hay menos de 2 fotos)
+            if (viewModel.selectedImages.size < 2) {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .size(80.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(Color(0xFFF0F0F0))
+                        .border(1.dp, Color.Gray, RoundedCornerShape(12.dp))
+                        .clickable {
+                            // Acción: Pedir permiso -> Abrir galería
+                            permissionLauncher.launch(permissionToRequest)
+                        }
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Icon(Icons.Default.AttachFile, contentDescription = null, tint = Color.Gray)
+                        Text("Subir", fontSize = 10.sp, color = Color.Gray)
+                    }
+                }
+            }
+
+            // Mostrar fotos seleccionadas
+            viewModel.selectedImages.forEach { uri ->
+                Box(modifier = Modifier.size(80.dp)) {
+                    // Imagen
+                    AsyncImage(
+                        model = uri,
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(RoundedCornerShape(12.dp))
+                            .border(1.dp, Color.LightGray, RoundedCornerShape(12.dp))
+                    )
+                    // Botón X para borrar
+                    IconButton(
+                        onClick = { viewModel.removeImage(uri) },
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .size(24.dp)
+                            .background(Color.White.copy(alpha = 0.7f), CircleShape)
+                    ) {
+                        Icon(Icons.Default.Close, contentDescription = "Borrar", modifier = Modifier.size(16.dp))
+                    }
+                }
             }
         }
 

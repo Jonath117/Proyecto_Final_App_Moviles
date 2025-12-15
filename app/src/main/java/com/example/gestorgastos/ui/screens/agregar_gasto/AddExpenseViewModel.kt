@@ -1,5 +1,6 @@
 package com.example.gestorgastos.ui.screens.add_expense
 
+import android.net.Uri
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.getValue
@@ -30,6 +31,9 @@ class AddExpenseViewModel : ViewModel() {
     var dateMillis by mutableStateOf(System.currentTimeMillis())
         private set
 
+    var selectedImages by mutableStateOf<List<Uri>>(emptyList())
+        private set
+
     val categories = ExpenseRepository.categories.map { list ->
         list + Category(
             id = "create_new",
@@ -54,7 +58,8 @@ class AddExpenseViewModel : ViewModel() {
                 title = detail.ifBlank { selectedCategory!!.name },
                 amount = amount.toDoubleOrNull() ?: 0.0,
                 categoryName = selectedCategory!!.name,
-                date = dateMillis
+                date = dateMillis,
+                imageUris = selectedImages.map { it.toString() }
             )
             ExpenseRepository.addExpense(newItem)
 
@@ -62,10 +67,20 @@ class AddExpenseViewModel : ViewModel() {
             amount = ""
             detail = ""
             selectedCategory = null
+            selectedImages = emptyList()
         }
     }
 
     fun onDateChange(newDate: Long) {
         dateMillis = newDate
+    }
+
+    fun onImagesSelected(uris: List<Uri>) {
+        val combined = selectedImages + uris
+        selectedImages = combined.take(2)
+    }
+
+    fun removeImage(uri: Uri) {
+        selectedImages = selectedImages - uri
     }
 }

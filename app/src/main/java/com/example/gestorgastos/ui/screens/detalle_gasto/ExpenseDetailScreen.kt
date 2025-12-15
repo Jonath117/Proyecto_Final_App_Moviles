@@ -21,6 +21,19 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+import coil.compose.AsyncImage
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+
 @Composable
 fun ExpenseDetailScreen(
     expenseId: String,
@@ -32,20 +45,23 @@ fun ExpenseDetailScreen(
     }
 
     val expense = viewModel.expense
-    val LightPurpleBg = Color(0xFFF3E5F5)
+
+    var selectedImageUri by remember { mutableStateOf<String?>(null) }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
-    ) {
+    )
+    {
 
         if (expense == null) {
 
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text("Cargando o no encontrado...", color = Color.Gray)
             }
-        } else {
+        } else
+        {
 
             val category = ExpenseRepository.getCategoryByName(expense.categoryName)
             val icon = category?.icon ?: Icons.Default.Category
@@ -96,7 +112,7 @@ fun ExpenseDetailScreen(
                 // 3. Detalle
                 DetailLabel("Detalle")
                 Text(
-                    text = expense.title, // "Taxi al aeropuerto"
+                    text = expense.title,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Light,
                     color = Color.Black
@@ -107,17 +123,85 @@ fun ExpenseDetailScreen(
                 // 4. Monto
                 DetailLabel("Monto")
                 Text(
-                    text = String.format("%.2f", expense.amount), // "30.00"
+                    text = String.format("%.2f", expense.amount),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Light,
                     color = Color.Black
                 )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                // 5. Recibo
+                if (expense.imageUris.isNotEmpty()) {
+                    DetailLabel("Comprobante / Recibo")
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        expense.imageUris.forEach { uriString ->
+                            Box(
+                                modifier = Modifier
+                                    .height(120.dp)
+                                    .weight(1f)
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .border(1.dp, Color.LightGray, RoundedCornerShape(12.dp))
+                                    .clickable { selectedImageUri = uriString }
+                            ) {
+                                AsyncImage(
+                                    model = uriString,
+                                    contentDescription = "Foto del recibo",
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                            }
+                        }
+
+                        if (expense.imageUris.size == 1) {
+                            Spacer(modifier = Modifier.weight(1f))
+                        }
+                    }
+                }
+            }
+            if (selectedImageUri != null) {
+                Dialog(
+                    onDismissRequest = { selectedImageUri = null },
+                    properties = DialogProperties(usePlatformDefaultWidth = false)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.Black)
+                    ) {
+                        // La Imagen Grande
+                        AsyncImage(
+                            model = selectedImageUri,
+                            contentDescription = "Imagen completa",
+                            contentScale = ContentScale.Fit,
+                            modifier = Modifier.fillMaxSize()
+                        )
+
+
+                        IconButton(
+                            onClick = { selectedImageUri = null },
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .padding(16.dp)
+                                .background(Color.Black.copy(alpha = 0.5f), CircleShape)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = "Cerrar",
+                                tint = Color.White
+                            )
+                        }
+                    }
+                }
             }
         }
     }
 }
 
-// Componente pequeño para el título gris ("Categoría", "Fecha"...)
 @Composable
 fun DetailLabel(text: String) {
     Text(
@@ -129,8 +213,8 @@ fun DetailLabel(text: String) {
     )
 }
 
-// Formateador de fecha largo (ej: "20 de diciembre de 2025")
 fun formatDateFull(millis: Long): String {
     val formatter = SimpleDateFormat("d 'de' MMMM 'de' yyyy", Locale("es", "ES"))
+    formatter.timeZone = java.util.TimeZone.getTimeZone("UTC")
     return formatter.format(Date(millis))
 }
