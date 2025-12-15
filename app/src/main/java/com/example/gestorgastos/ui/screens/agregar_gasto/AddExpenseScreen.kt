@@ -37,6 +37,8 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+import java.util.TimeZone
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddExpenseScreen(
@@ -214,5 +216,6 @@ fun AddExpenseScreen(
 
 fun formatDate(millis: Long): String {
     val formatter = SimpleDateFormat("dd-MM\nyyyy", Locale.getDefault())
+    formatter.timeZone = TimeZone.getTimeZone("UTC")
     return formatter.format(Date(millis))
 }

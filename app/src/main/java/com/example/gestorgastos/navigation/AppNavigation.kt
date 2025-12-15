@@ -51,10 +51,12 @@ fun AppNavigation() {
 
     val canNavigateBack = navController.previousBackStackEntry != null &&
             currentDestination?.hasRoute<Home>() == false &&
-            currentDestination?.hasRoute<Categories>() == false
+            currentDestination?.hasRoute<Categories>() == false &&
+            currentDestination?.hasRoute<Reporteria>() == false
 
     val showBottomBar = currentDestination?.hasRoute<AddExpense>() == false &&
-            currentDestination?.hasRoute<AddCategory>() == false
+            currentDestination?.hasRoute<AddCategory>() == false && currentDestination?.hasRoute<Profile>() == false
+
 
     Scaffold(
         topBar = {
