@@ -91,7 +91,13 @@ fun AddExpenseScreen(
         LabeledTextField(
             label = "Monto",
             value = viewModel.amount,
-            onValueChange = { viewModel.onAmountChange(it) },
+            onValueChange = { newValue ->
+                val filtered = newValue
+                    .replace(",", ".")
+                    .filter { it.isDigit() || it == '.' }
+
+                viewModel.onAmountChange(filtered)
+            },
             placeholder = "0.00",
             keyboardType = KeyboardType.Decimal
         )

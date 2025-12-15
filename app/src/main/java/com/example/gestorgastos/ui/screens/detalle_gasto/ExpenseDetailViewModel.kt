@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.gestorgastos.domain.model.ExpenseItem
 import com.example.gestorgastos.data.ExpenseRepository
+import com.example.gestorgastos.domain.model.Category
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -18,7 +19,6 @@ class ExpenseDetailViewModel : ViewModel() {
     fun loadExpense(id: String) {
         viewModelScope.launch {
             ExpenseRepository.expenses.collectLatest { list ->
-                // Buscamos el gasto por su ID único
                 expense = list.find { it.id == id }
             }
         }

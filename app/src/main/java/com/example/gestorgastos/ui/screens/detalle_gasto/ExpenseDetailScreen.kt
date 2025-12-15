@@ -16,6 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.gestorgastos.data.ExpenseRepository
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -26,7 +27,6 @@ fun ExpenseDetailScreen(
     viewModel: ExpenseDetailViewModel = viewModel(),
     onBackClick: () -> Unit
 ) {
-    // Cargamos el gasto al iniciar la pantalla
     LaunchedEffect(expenseId) {
         viewModel.loadExpense(expenseId)
     }
@@ -39,40 +39,24 @@ fun ExpenseDetailScreen(
             .fillMaxSize()
             .background(Color.White)
     ) {
-        // HEADER REUTILIZADO (Título "Detalle Transacción")
-        // Nota: Asegúrate de que HomeHeader soporte título personalizado o usa un TopAppBar simple aquí si prefieres
-        // Aquí usaré un bloque simple para igualar tu imagen si HomeHeader es fijo
-
-//        Box(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .background(LightPurpleBg)
-//                .padding(top = 40.dp, bottom = 20.dp), // Ajuste para barra de estado
-//            contentAlignment = Alignment.Center
-//        ) {
-//            Text(
-//                text = "Detalle Transacción",
-//                fontSize = 20.sp,
-//                fontWeight = FontWeight.SemiBold,
-//                color = Color.Black
-//            )
-//        }
 
         if (expense == null) {
-            // Estado de carga o error
+
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text("Cargando o no encontrado...", color = Color.Gray)
             }
         } else {
-            // DATOS DEL GASTO
+
+            val category = ExpenseRepository.getCategoryByName(expense.categoryName)
+            val icon = category?.icon ?: Icons.Default.Category
+            val iconColor = category?.color ?: Color.Black
+
             Column(modifier = Modifier.padding(24.dp)) {
 
                 Spacer(modifier = Modifier.height(20.dp))
 
-                // 1. Categoría
                 DetailLabel("Categoría")
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    // Círculo gris con icono (simulado)
                     Box(
                         modifier = Modifier
                             .size(40.dp)
@@ -80,18 +64,19 @@ fun ExpenseDetailScreen(
                             .background(Color.LightGray.copy(alpha = 0.4f)),
                         contentAlignment = Alignment.Center
                     ) {
-                        // Aquí podrías buscar el icono real de la categoría si lo tuvieras guardado
+
                         Icon(
-                            imageVector = Icons.Default.Category,
+                            imageVector = icon,
                             contentDescription = null,
-                            tint = Color.Gray
+                            tint = iconColor,
                         )
                     }
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(
                         text = expense.categoryName,
                         fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Light,
+                        color = Color.Black
                     )
                 }
 
@@ -102,7 +87,8 @@ fun ExpenseDetailScreen(
                 Text(
                     text = formatDateFull(expense.date), // "20 de diciembre de 2025"
                     fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold
+                    fontWeight = FontWeight.Light,
+                    color = Color.Black
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -112,7 +98,8 @@ fun ExpenseDetailScreen(
                 Text(
                     text = expense.title, // "Taxi al aeropuerto"
                     fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold
+                    fontWeight = FontWeight.Light,
+                    color = Color.Black
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -122,7 +109,8 @@ fun ExpenseDetailScreen(
                 Text(
                     text = String.format("%.2f", expense.amount), // "30.00"
                     fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Light,
+                    color = Color.Black
                 )
             }
         }
@@ -135,7 +123,8 @@ fun DetailLabel(text: String) {
     Text(
         text = text,
         fontSize = 14.sp,
-        color = Color.Gray,
+        fontWeight = FontWeight.Bold,
+        color = Color.Black,
         modifier = Modifier.padding(bottom = 8.dp)
     )
 }

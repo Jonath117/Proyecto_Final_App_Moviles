@@ -1,5 +1,6 @@
 package com.example.gestorgastos.ui.components
 
+import android.R.color.black
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -67,6 +68,13 @@ import com.example.gestorgastos.domain.model.ExpenseItem
 //
 @Composable
 fun ExpenseItemCard(item: ExpenseItem, backgroundColor: Color, onClick: () -> Unit) {
+
+    val category = ExpenseRepository.getCategoryByName(item.categoryName)
+
+    // Definimos valores por defecto si no se encuentra (por seguridad)
+    val icon = category?.icon ?: Icons.Default.MoneyOff
+    val iconColor = category?.color ?: Color(0xFF5E35B1)
+
     Card(
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = backgroundColor),
@@ -83,9 +91,9 @@ fun ExpenseItemCard(item: ExpenseItem, backgroundColor: Color, onClick: () -> Un
             Row(verticalAlignment = Alignment.CenterVertically) {
                 // Icono (Podrías hacerlo dinámico según la categoría)
                 Icon(
-                    imageVector = Icons.Default.MoneyOff, // Icono genérico
+                    imageVector = icon,
                     contentDescription = null,
-                    tint = Color(0xFF5E35B1),
+                    tint = iconColor,
                     modifier = Modifier.size(32.dp)
                 )
                 Spacer(modifier = Modifier.width(16.dp))
@@ -93,7 +101,8 @@ fun ExpenseItemCard(item: ExpenseItem, backgroundColor: Color, onClick: () -> Un
                     Text(
                         text = item.title,
                         fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp
+                        fontSize = 16.sp,
+                        color = Color.Black
                     )
                     Text(
                         text = item.categoryName,

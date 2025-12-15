@@ -42,4 +42,8 @@ object ExpenseRepository {
         )
         _categories.update { it + newCategory }
     }
+
+    fun getCategoryByName(name: String): Category? {
+        return _categories.value.find { it.name == name }
+    }
 }
