@@ -16,7 +16,7 @@ object Categories
 object AddCategory
 
 @Serializable
-object Reporte
+object Reporteria
 
 @Serializable
 object Profile

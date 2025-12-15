@@ -50,7 +50,7 @@ fun MyTopAppBar(
                 Icon(
                     imageVector = Icons.Default.AccountCircle,
                     contentDescription = "Perfil",
-                    tint = Color.Black // O el color que contraste con tu barra
+                    tint = Color.Black
                 )
             }
         }

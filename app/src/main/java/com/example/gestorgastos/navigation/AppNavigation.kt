@@ -23,6 +23,7 @@ import com.example.gestorgastos.ui.screens.agregar_categoria.AddCategoryScreen /
 import com.example.gestorgastos.ui.screens.categories.CategoriesScreen // <--- Y este también
 import com.example.gestorgastos.ui.screens.detalle_gasto.ExpenseDetailScreen
 import com.example.gestorgastos.ui.screens.profile.ProfileScreen
+import com.example.gestorgastos.ui.screens.reporteria.ReporteriaScreen
 
 @Composable
 fun AppNavigation() {
@@ -34,6 +35,7 @@ fun AppNavigation() {
     val navItems = listOf(
         BottomNavItem("Home", Icons.Default.Home, Home),
         BottomNavItem("Categorías", Icons.Default.GridView, Categories),
+        BottomNavItem("Reportes", Icons.Default.PieChart, Reporteria)
     )
 
     val currentTitle = when {
@@ -43,6 +45,7 @@ fun AppNavigation() {
         currentDestination?.hasRoute<AddCategory>() == true -> "Nueva Categoría"
         currentDestination?.hasRoute<ExpenseDetail>() == true -> "Detalle del Gasto"
         currentDestination?.hasRoute<Profile>() == true -> "Perfil"
+        currentDestination?.hasRoute<Reporteria>() == true -> "Reporte"
         else -> "Gestor de Gastos"
     }
 
@@ -125,6 +128,10 @@ fun AppNavigation() {
                     expenseId = detail.id,
                     onBackClick = { navController.popBackStack() }
                 )
+            }
+
+            composable<Reporteria> {
+                ReporteriaScreen()
             }
         }
     }
