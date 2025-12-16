@@ -32,7 +32,6 @@ fun CategoriesScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
-            .padding(bottom = 80.dp)
     ) {
 
         Spacer(modifier = Modifier.height(20.dp))

@@ -18,7 +18,6 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
-
 class AddExpenseViewModel : ViewModel() {
 
     var amount by mutableStateOf("")
@@ -47,28 +46,83 @@ class AddExpenseViewModel : ViewModel() {
         initialValue = emptyList()
     )
 
+
+    var amountError by mutableStateOf<String?>(null)
+        private set
+
+    var hasInteracted by mutableStateOf(false)
+        private set
+
+    var errorMessage by mutableStateOf<String?>(null)
+        private set
+
+    var isSuccess by mutableStateOf(false)
+        private set
+
+
     fun onAmountChange(text: String) { amount = text }
     fun onDetailChange(text: String) { detail = text }
     fun onCategorySelected(category: Category) { selectedCategory = category }
 
-    fun saveExpense() {
-        if (amount.isNotBlank() && selectedCategory != null) {
-            val newItem = ExpenseItem(
-                id = UUID.randomUUID().toString(),
-                title = detail.ifBlank { selectedCategory!!.name },
-                amount = amount.toDoubleOrNull() ?: 0.0,
-                categoryName = selectedCategory!!.name,
-                date = dateMillis,
-                imageUris = selectedImages.map { it.toString() }
-            )
-            ExpenseRepository.addExpense(newItem)
+//    fun saveExpense() {
+//        if (amount.isNotBlank() && selectedCategory != null) {
+//            val newItem = ExpenseItem(
+//                id = UUID.randomUUID().toString(),
+//                title = detail.ifBlank { selectedCategory!!.name },
+//                amount = amount.toDoubleOrNull() ?: 0.0,
+//                categoryName = selectedCategory!!.name,
+//                date = dateMillis,
+//                imageUris = selectedImages.map { it.toString() }
+//            )
+//            ExpenseRepository.addExpense(newItem)
+//
+//            // Limpiar
+//            amount = ""
+//            detail = ""
+//            selectedCategory = null
+//            selectedImages = emptyList()
+//        }
+//    }
 
-            // Limpiar
-            amount = ""
-            detail = ""
-            selectedCategory = null
-            selectedImages = emptyList()
+    fun saveExpense() {
+        hasInteracted = true
+        errorMessage = null
+        isSuccess = false
+
+        when {
+            amount.isBlank() -> {
+                errorMessage = "Ingresa un monto"
+            }
+
+            amount.toDoubleOrNull() == null || amount.toDouble() <= 0 -> {
+                errorMessage = "El monto debe ser mayor a 0"
+            }
+
+            selectedCategory == null -> {
+                errorMessage = "Selecciona una categoría"
+            }
+            else -> {
+                val newItem = ExpenseItem(
+                    id = UUID.randomUUID().toString(),
+                    title = detail.ifBlank { selectedCategory!!.name },
+                    amount = amount.toDouble(),
+                    categoryName = selectedCategory!!.name,
+                    date = dateMillis,
+                    imageUris = selectedImages.map { it.toString() }
+                )
+
+                ExpenseRepository.addExpense(newItem)
+                isSuccess = true
+                clearForm()
+            }
         }
+    }
+
+    fun clearForm(){
+        amount = ""
+        detail = ""
+        selectedCategory = null
+        selectedImages = emptyList()
     }
 
     fun onDateChange(newDate: Long) {
@@ -82,5 +136,24 @@ class AddExpenseViewModel : ViewModel() {
 
     fun removeImage(uri: Uri) {
         selectedImages = selectedImages - uri
+    }
+
+//    fun validateOnSubmit() {
+//        hasInteracted = true
+//        validateAmount()
+//    }
+//
+//    fun validateAmount(){
+//        amountError = when {
+//            amount.isBlank() -> "El monto no puede estar vacío"
+//            amount.toDoubleOrNull() == null -> "El monto debe ser un número válido"
+//            else -> null
+//        }
+//    }
+
+    fun isFormValid(): Boolean {
+        return amount.toDoubleOrNull() != null &&
+                amount.toDouble() > 0 &&
+                selectedCategory != null
     }
 }

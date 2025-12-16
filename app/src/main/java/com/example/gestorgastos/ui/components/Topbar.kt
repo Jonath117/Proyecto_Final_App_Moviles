@@ -11,6 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -24,7 +26,7 @@ fun MyTopAppBar(
     val SoftLav = Color(0xFFECE4F4)
 
     CenterAlignedTopAppBar(
-        title = { Text(title) },
+        title = { Text(title, fontSize = 25.sp, fontWeight = FontWeight.Bold)  },
         colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
             containerColor = SoftLav,
             titleContentColor = Color.Black,

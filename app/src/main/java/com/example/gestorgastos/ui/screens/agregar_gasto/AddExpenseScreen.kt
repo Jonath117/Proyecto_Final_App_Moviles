@@ -143,7 +143,8 @@ fun AddExpenseScreen(
                 viewModel.onAmountChange(filtered)
             },
             placeholder = "0.00",
-            keyboardType = KeyboardType.Decimal
+            keyboardType = KeyboardType.Decimal,
+            error = if (viewModel.hasInteracted) viewModel.amountError else null
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -200,7 +201,7 @@ fun AddExpenseScreen(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
                     .clip(RoundedCornerShape(12.dp))
-                    .background(Color(0xFFF5F5F5))
+                    .background(Color(0xFFdddddd))
                     .clickable { showDatePicker = true }
                     .padding(horizontal = 24.dp, vertical = 12.dp)
             ) {
@@ -233,7 +234,6 @@ fun AddExpenseScreen(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            // Botón para agregar (Siempre visible si hay menos de 2 fotos)
             if (viewModel.selectedImages.size < 2) {
                 Box(
                     contentAlignment = Alignment.Center,
@@ -243,7 +243,6 @@ fun AddExpenseScreen(
                         .background(Color(0xFFF0F0F0))
                         .border(1.dp, Color.Gray, RoundedCornerShape(12.dp))
                         .clickable {
-                            // Acción: Pedir permiso -> Abrir galería
                             permissionLauncher.launch(permissionToRequest)
                         }
                 ) {
@@ -254,7 +253,6 @@ fun AddExpenseScreen(
                 }
             }
 
-            // Mostrar fotos seleccionadas
             viewModel.selectedImages.forEach { uri ->
                 Box(modifier = Modifier.size(80.dp)) {
                     // Imagen
@@ -281,8 +279,6 @@ fun AddExpenseScreen(
             }
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
-
         LabeledTextField(
             label = "Detalle",
             value = viewModel.detail,
@@ -290,13 +286,43 @@ fun AddExpenseScreen(
             placeholder = "Opcional"
         )
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(16.dp))
+
+        when {
+            viewModel.errorMessage != null -> {
+                Text(
+                    text = viewModel.errorMessage!!,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier
+                        .padding(top = 12.dp)
+                        .fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
+            }
+
+            viewModel.isSuccess -> {
+                Text(
+                    text = "¡Gasto creado exitosamente!",
+                    color = Color(0xFF2E7D32),
+                    modifier = Modifier
+                        .padding(top = 12.dp)
+                        .fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         Button(
             onClick = {
                 viewModel.saveExpense()
-                onSaveSuccess()
+                if(viewModel.isFormValid()){
+                    onSaveSuccess()
+                }
             },
+
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),
@@ -309,7 +335,7 @@ fun AddExpenseScreen(
             Text("Añadir gasto", fontSize = 18.sp, fontWeight = FontWeight.Bold)
         }
 
-        Spacer(modifier = Modifier.height(20.dp)) // Espacio final
+        Spacer(modifier = Modifier.height(20.dp))
     }
 }
 

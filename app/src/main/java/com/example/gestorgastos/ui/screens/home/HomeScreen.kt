@@ -34,7 +34,6 @@ fun HomeScreen(
 ) {
     val expenses by viewModel.expenses.collectAsState()
 
-    val LightPurpleBg = Color(0xFFF3E5F5)
     val CardBg = Color(0xFFEDE7F6)
     val PurpleAccent = Color(0xFF6A1B9A)
 

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -24,14 +25,16 @@ fun LabeledTextField(
     onValueChange: (String) -> Unit,
     placeholder: String = "",
     keyboardType: KeyboardType = KeyboardType.Text,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    error: String? = null
 ) {
     Column(modifier = modifier) {
         Text(
             text = label,
             fontSize = 15.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.Black
+            color = Color.Black,
+
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -57,7 +60,16 @@ fun LabeledTextField(
                 focusedTextColor = Color.Black,
                 unfocusedTextColor = Color.Black
             ),
-            keyboardOptions = KeyboardOptions(keyboardType = keyboardType)
+            keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
+            isError = error != null,
         )
+
+        if (error != null) {
+            Text(
+                text = error,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
     }
 }

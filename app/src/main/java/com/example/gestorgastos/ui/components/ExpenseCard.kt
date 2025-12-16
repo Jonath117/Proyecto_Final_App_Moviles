@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.gestorgastos.data.ExpenseRepository
 import com.example.gestorgastos.domain.model.ExpenseItem
+import androidx.compose.ui.text.style.TextOverflow
 
 //@Composable
 //fun ExpenseCard(item: ExpenseItem, backgroundColor: Color) {

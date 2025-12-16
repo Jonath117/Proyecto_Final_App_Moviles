@@ -33,14 +33,10 @@ object ExpenseRepository {
     )
     val categories: StateFlow<List<Category>> = _categories.asStateFlow()
 
-    fun addCategory(name: String) {
-        val newCategory = Category(
-            id = UUID.randomUUID().toString(),
-            name = name,
-            icon = Icons.Default.Label,
-            color = Color(0xFF90A4AE)
-        )
-        _categories.update { it + newCategory }
+    fun addCategory(category: Category) {
+        val currentList = _categories.value.toMutableList()
+        currentList.add(category)
+        _categories.value = currentList
     }
 
     fun getCategoryByName(name: String): Category? {
