@@ -42,4 +42,32 @@ object ExpenseRepository {
     fun getCategoryByName(name: String): Category? {
         return _categories.value.find { it.name == name }
     }
+
+    fun deleteExpense(expenseId: String) {
+        val currentList = _expenses.value.toMutableList()
+        currentList.removeIf { it.id == expenseId }
+        _expenses.value = currentList
+    }
+
+    // ACTUALIZAR GASTO
+    fun updateExpense(updatedItem: ExpenseItem) {
+        val currentList = _expenses.value.toMutableList()
+        val index = currentList.indexOfFirst { it.id == updatedItem.id }
+        if (index != -1) {
+            currentList[index] = updatedItem
+            _expenses.value = currentList
+        }
+    }
+
+    // OBTENER GASTO POR ID
+    fun getExpenseById(id: String): ExpenseItem? {
+        return _expenses.value.find { it.id == id }
+    }
+
+    // ELIMINAR CATEGORÍA
+    fun deleteCategory(categoryId: String) {
+        val currentList = _categories.value.toMutableList()
+        currentList.removeIf { it.id == categoryId }
+        _categories.value = currentList
+    }
 }

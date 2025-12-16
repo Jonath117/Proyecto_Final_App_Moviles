@@ -1,73 +1,75 @@
 package com.example.gestorgastos.ui.screens.detalle_gasto
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState // <--- IMPORTANTE
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll // <--- IMPORTANTE
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Category
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.AsyncImage
 import com.example.gestorgastos.data.ExpenseRepository
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-import coil.compose.AsyncImage
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
-
 @Composable
 fun ExpenseDetailScreen(
     expenseId: String,
     viewModel: ExpenseDetailViewModel = viewModel(),
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onEditClick: (String) -> Unit
 ) {
     LaunchedEffect(expenseId) {
         viewModel.loadExpense(expenseId)
     }
 
     val expense = viewModel.expense
-
     var selectedImageUri by remember { mutableStateOf<String?>(null) }
+
+    // Estado para el scroll
+    val scrollState = rememberScrollState()
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
-    )
-    {
-
+    ) {
         if (expense == null) {
-
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text("Cargando o no encontrado...", color = Color.Gray)
             }
-        } else
-        {
-
+        } else {
             val category = ExpenseRepository.getCategoryByName(expense.categoryName)
             val icon = category?.icon ?: Icons.Default.Category
             val iconColor = category?.color ?: Color.Black
 
-            Column(modifier = Modifier.padding(24.dp)) {
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(scrollState)
+                    .padding(24.dp)
+            ) {
 
                 Spacer(modifier = Modifier.height(20.dp))
 
@@ -80,7 +82,6 @@ fun ExpenseDetailScreen(
                             .background(Color.LightGray.copy(alpha = 0.4f)),
                         contentAlignment = Alignment.Center
                     ) {
-
                         Icon(
                             imageVector = icon,
                             contentDescription = null,
@@ -98,10 +99,10 @@ fun ExpenseDetailScreen(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // 2. Fecha
+                // Fecha
                 DetailLabel("Fecha")
                 Text(
-                    text = formatDateFull(expense.date), // "20 de diciembre de 2025"
+                    text = formatDateFull(expense.date),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Light,
                     color = Color.Black
@@ -109,7 +110,7 @@ fun ExpenseDetailScreen(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // 3. Detalle
+                // Detalle
                 DetailLabel("Detalle")
                 Text(
                     text = expense.title,
@@ -120,7 +121,7 @@ fun ExpenseDetailScreen(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // 4. Monto
+                // Monto
                 DetailLabel("Monto")
                 Text(
                     text = String.format("%.2f", expense.amount),
@@ -131,7 +132,7 @@ fun ExpenseDetailScreen(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // 5. Recibo
+                // Recibo / Fotos
                 if (expense.imageUris.isNotEmpty()) {
                     DetailLabel("Comprobante / Recibo")
 
@@ -162,7 +163,47 @@ fun ExpenseDetailScreen(
                         }
                     }
                 }
+
+                Spacer(modifier = Modifier.height(40.dp)) // Espacio antes de los botones
+
+                // BOTONES DE ACCIÓN
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    // Botón Eliminar
+                    Button(
+                        onClick = {
+                            ExpenseRepository.deleteExpense(expenseId)
+                            onBackClick()
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFEF5350)),
+                        modifier = Modifier.weight(1f), // Ocupa 50% del ancho
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Icon(Icons.Default.Delete, contentDescription = null)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Eliminar")
+                    }
+
+                    // Botón Editar
+                    Button(
+                        onClick = { onEditClick(expenseId) },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF7E57C2)),
+                        modifier = Modifier.weight(1f),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Icon(Icons.Default.Edit, contentDescription = null)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Editar")
+                    }
+                }
+
+
+                Spacer(modifier = Modifier.height(20.dp))
             }
+
+            // DIALOGO DE IMAGEN
             if (selectedImageUri != null) {
                 Dialog(
                     onDismissRequest = { selectedImageUri = null },
@@ -173,14 +214,12 @@ fun ExpenseDetailScreen(
                             .fillMaxSize()
                             .background(Color.Black)
                     ) {
-                        // La Imagen Grande
                         AsyncImage(
                             model = selectedImageUri,
                             contentDescription = "Imagen completa",
                             contentScale = ContentScale.Fit,
                             modifier = Modifier.fillMaxSize()
                         )
-
 
                         IconButton(
                             onClick = { selectedImageUri = null },

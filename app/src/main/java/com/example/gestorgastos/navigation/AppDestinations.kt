@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 object Home
 
 @Serializable
-object AddExpense
+data class AddExpense(val expenseId: String? = null)
 
 @Serializable
 object Categories

@@ -33,6 +33,8 @@ class AddExpenseViewModel : ViewModel() {
     var selectedImages by mutableStateOf<List<Uri>>(emptyList())
         private set
 
+    private var editingExpenseId: String? = null
+
     val categories = ExpenseRepository.categories.map { list ->
         list + Category(
             id = "create_new",
@@ -102,16 +104,22 @@ class AddExpenseViewModel : ViewModel() {
                 errorMessage = "Selecciona una categoría"
             }
             else -> {
+                val finalId = editingExpenseId ?: UUID.randomUUID().toString()
+
                 val newItem = ExpenseItem(
-                    id = UUID.randomUUID().toString(),
+                    id = finalId,
                     title = detail.ifBlank { selectedCategory!!.name },
-                    amount = amount.toDouble(),
+                    amount = amount.replace(",", ".").toDoubleOrNull() ?: 0.0,
                     categoryName = selectedCategory!!.name,
                     date = dateMillis,
                     imageUris = selectedImages.map { it.toString() }
                 )
 
-                ExpenseRepository.addExpense(newItem)
+                if (editingExpenseId == null) {
+                    ExpenseRepository.addExpense(newItem) // Crear nuevo
+                } else {
+                    ExpenseRepository.updateExpense(newItem) // Actualizar existente
+                }
                 isSuccess = true
                 clearForm()
             }
@@ -123,6 +131,7 @@ class AddExpenseViewModel : ViewModel() {
         detail = ""
         selectedCategory = null
         selectedImages = emptyList()
+        editingExpenseId = null
     }
 
     fun onDateChange(newDate: Long) {
@@ -156,4 +165,24 @@ class AddExpenseViewModel : ViewModel() {
                 amount.toDouble() > 0 &&
                 selectedCategory != null
     }
+
+    // NUEVA FUNCIÓN: Cargar datos si es edición
+    fun loadExpenseIfEditing(id: String?) {
+        if (id == null) return
+
+        val expense = ExpenseRepository.getExpenseById(id) ?: return
+
+        // Rellenamos los campos con los datos existentes
+        editingExpenseId = expense.id
+        amount = expense.amount.toString().replace(".", ",")
+        detail = expense.title
+        dateMillis = expense.date
+
+        selectedCategory = ExpenseRepository.getCategoryByName(expense.categoryName)
+
+        selectedImages = expense.imageUris.map { android.net.Uri.parse(it) }
+    }
+
+
+
 }

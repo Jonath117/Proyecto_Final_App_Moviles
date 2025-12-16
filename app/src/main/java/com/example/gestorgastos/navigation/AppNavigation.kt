@@ -5,8 +5,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -16,6 +18,7 @@ import androidx.navigation.toRoute
 import com.example.gestorgastos.ui.components.BottomNavBar
 
 import com.example.gestorgastos.ui.components.MyTopAppBar
+import com.example.gestorgastos.ui.screens.add_expense.AddExpenseViewModel
 
 import com.example.gestorgastos.ui.screens.agregar_gasto.AddExpenseScreen
 import com.example.gestorgastos.ui.screens.home.HomeScreen
@@ -92,13 +95,22 @@ fun AppNavigation() {
         ) {
             composable<Home> {
                 HomeScreen(
-                    onFabClick = { navController.navigate(AddExpense) },
+                    onFabClick = { navController.navigate(AddExpense(null)) },
                     onExpenseClick = { id -> navController.navigate(ExpenseDetail(id = id)) }
                 )
             }
 
-            composable<AddExpense> {
+            composable<AddExpense> { backStackEntry ->
+                val args = backStackEntry.toRoute<AddExpense>()
+
+                val viewModel: AddExpenseViewModel = viewModel()
+
+                LaunchedEffect(args.expenseId) {
+                    viewModel.loadExpenseIfEditing(args.expenseId)
+                }
+
                 AddExpenseScreen(
+                    viewModel = viewModel,
                     onBackClick = { navController.popBackStack() },
                     onSaveSuccess = { navController.popBackStack() },
                     onCreateCategoryClick = { navController.navigate(AddCategory) }
@@ -128,7 +140,8 @@ fun AppNavigation() {
 
                 ExpenseDetailScreen(
                     expenseId = detail.id,
-                    onBackClick = { navController.popBackStack() }
+                    onBackClick = { navController.popBackStack()},
+                    onEditClick = { id -> navController.navigate(AddExpense(id)) }
                 )
             }
 
