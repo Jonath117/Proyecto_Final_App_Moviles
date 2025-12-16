@@ -24,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.gestorgastos.ui.components.LabeledTextField
+import com.example.gestorgastos.ui.components.MyButton
 import com.example.gestorgastos.ui.screens.add_category.AddCategoryViewModel
 
 @Composable
@@ -130,15 +131,43 @@ fun AddCategoryScreen(
 
         Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
 
-            Button(
+            MyButton(
+                text = "Cancelar",
                 onClick = onBackClick,
-                colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
-                modifier = Modifier.weight(1f)
-            ) {
-                Text("Cancelar", color = Color.Black)
-            }
+                modifier = Modifier.weight(1f),
+                containerColor = Color.LightGray,
+                enabled = true
+            )
 
-            Button(
+//            Button(
+//                onClick = onBackClick,
+//                colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
+//                modifier = Modifier.weight(1f)
+//            ) {
+//                Text("Cancelar", color = Color.Black)
+//            }
+
+//            Button(
+//                onClick = {
+//                    viewModel.validateOnSubmit()
+//                    if (viewModel.isFormValid()) {
+//                        viewModel.saveCategory()
+//                        onSaveSuccess()
+//                    }
+//                },
+//                enabled = viewModel.isFormValid(),
+//
+//                colors = ButtonDefaults.buttonColors(containerColor = PurpleButtonColor),
+//                modifier = Modifier.weight(1f)
+//            ) {
+//                Icon(Icons.Default.Check, contentDescription = null)
+//                Spacer(modifier = Modifier.width(8.dp))
+//                Text("Guardar")
+//            }
+
+            MyButton(
+                text = "Guardar",
+                enabled = true,
                 onClick = {
                     viewModel.validateOnSubmit()
                     if (viewModel.isFormValid()) {
@@ -146,15 +175,12 @@ fun AddCategoryScreen(
                         onSaveSuccess()
                     }
                 },
-                enabled = viewModel.isFormValid(),
-
-                colors = ButtonDefaults.buttonColors(containerColor = PurpleButtonColor),
+                icon = Icons.Default.Check,
+                containerColor = PurpleButtonColor,
                 modifier = Modifier.weight(1f)
-            ) {
-                Icon(Icons.Default.Check, contentDescription = null)
-                Spacer(modifier = Modifier.width(8.dp))
-                Text("Guardar")
-            }
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }

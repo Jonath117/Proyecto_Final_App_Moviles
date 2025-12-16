@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.font.FontWeight
@@ -52,8 +53,8 @@ fun MyTopAppBar(
         actions = {
             IconButton(onClick = onProfileClick) {
                 Icon(
-                    imageVector = Icons.Default.AccountCircle,
-                    contentDescription = "Perfil",
+                    imageVector = Icons.Default.Settings,
+                    contentDescription = "Ajustes",
                     tint = Color.Black
                 )
             }

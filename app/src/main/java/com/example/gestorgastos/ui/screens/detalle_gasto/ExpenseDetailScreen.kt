@@ -28,6 +28,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.gestorgastos.data.ExpenseRepository
+import com.example.gestorgastos.ui.components.MyButton
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -172,31 +173,52 @@ fun ExpenseDetailScreen(
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
                     // Botón Eliminar
-                    Button(
+//                    Button(
+//                        onClick = {
+//                            ExpenseRepository.deleteExpense(expenseId)
+//                            onBackClick()
+//                        },
+//                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFEF5350)),
+//                        modifier = Modifier.weight(1f), // Ocupa 50% del ancho
+//                        shape = RoundedCornerShape(12.dp)
+//                    ) {
+//                        Icon(Icons.Default.Delete, contentDescription = null)
+//                        Spacer(modifier = Modifier.width(8.dp))
+//                        Text("Eliminar")
+//                    }
+
+                    MyButton(
+                        text = "Eliminar",
                         onClick = {
                             ExpenseRepository.deleteExpense(expenseId)
                             onBackClick()
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFEF5350)),
-                        modifier = Modifier.weight(1f), // Ocupa 50% del ancho
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Icon(Icons.Default.Delete, contentDescription = null)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("Eliminar")
-                    }
+                        icon = Icons.Default.Delete,
+                        containerColor = Color(0xFFEF5350),
+                        modifier = Modifier.weight(1f),
+                        enabled = true
+                    )
 
                     // Botón Editar
-                    Button(
+//                    Button(
+//                        onClick = { onEditClick(expenseId) },
+//                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF7E57C2)),
+//                        modifier = Modifier.weight(1f),
+//                        shape = RoundedCornerShape(12.dp)
+//                    ) {
+//                        Icon(Icons.Default.Edit, contentDescription = null)
+//                        Spacer(modifier = Modifier.width(8.dp))
+//                        Text("Editar")
+//                    }
+
+                    MyButton(
+                        text = "Editar",
                         onClick = { onEditClick(expenseId) },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF7E57C2)),
+                        icon = Icons.Default.Edit,
+                        containerColor = Color(0xFF7E57C2),
                         modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Icon(Icons.Default.Edit, contentDescription = null)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("Editar")
-                    }
+                        enabled = true
+                    )
                 }
 
 

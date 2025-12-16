@@ -19,7 +19,8 @@ object AddCategory
 object Reporteria
 
 @Serializable
-object Profile
+object Settings
+
 
 @Serializable
 data class ExpenseDetail(val id: String)

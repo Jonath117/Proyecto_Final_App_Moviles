@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -40,8 +39,6 @@ import coil.compose.AsyncImage
 import com.example.gestorgastos.ui.components.CategoryGridItem
 import com.example.gestorgastos.ui.components.LabeledTextField
 import com.example.gestorgastos.ui.screens.add_expense.AddExpenseViewModel
-import kotlinx.coroutines.flow.chunked
-import kotlinx.coroutines.flow.forEach
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -49,6 +46,7 @@ import java.util.Locale
 import java.util.TimeZone
 import android.Manifest
 import androidx.compose.ui.platform.LocalContext
+import com.example.gestorgastos.ui.components.MyButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -91,7 +89,6 @@ fun AddExpenseScreen(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
-            // Si da permiso, abrimos la galería
             photoPickerLauncher.launch(
                 PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
             )
@@ -317,25 +314,37 @@ fun AddExpenseScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Button(
+//        Button(
+//            onClick = {
+//                viewModel.saveExpense()
+//                if(viewModel.isFormValid()){
+//                    onSaveSuccess()
+//                }
+//            },
+//
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .height(56.dp),
+//            colors = ButtonDefaults.buttonColors(containerColor = purpleButtonColor),
+//            shape = RoundedCornerShape(16.dp),
+//            elevation = ButtonDefaults.buttonElevation(8.dp)
+//        ) {
+//            Icon(Icons.Default.Add, contentDescription = null)
+//            Spacer(modifier = Modifier.width(8.dp))
+//            Text("Añadir gasto", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+//        }
+
+        MyButton(
+            text = "Añadir gasto",
             onClick = {
                 viewModel.saveExpense()
-                if(viewModel.isFormValid()){
+                if (viewModel.isFormValid()) {
                     onSaveSuccess()
                 }
             },
-
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = purpleButtonColor),
-            shape = RoundedCornerShape(16.dp),
-            elevation = ButtonDefaults.buttonElevation(8.dp)
-        ) {
-            Icon(Icons.Default.Add, contentDescription = null)
-            Spacer(modifier = Modifier.width(8.dp))
-            Text("Añadir gasto", fontSize = 18.sp, fontWeight = FontWeight.Bold)
-        }
+            enabled = viewModel.isFormValid(),
+            icon = Icons.Default.Add,
+        )
 
         Spacer(modifier = Modifier.height(20.dp))
     }

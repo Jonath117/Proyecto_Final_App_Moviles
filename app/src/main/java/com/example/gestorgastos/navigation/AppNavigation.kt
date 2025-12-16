@@ -25,8 +25,9 @@ import com.example.gestorgastos.ui.screens.home.HomeScreen
 import com.example.gestorgastos.ui.screens.agregar_categoria.AddCategoryScreen // <--- Asegura este import
 import com.example.gestorgastos.ui.screens.categories.CategoriesScreen // <--- Y este también
 import com.example.gestorgastos.ui.screens.detalle_gasto.ExpenseDetailScreen
-import com.example.gestorgastos.ui.screens.profile.ProfileScreen
+import com.example.gestorgastos.ui.screens.settings.SettingsScreen
 import com.example.gestorgastos.ui.screens.reporteria.ReporteriaScreen
+import com.example.gestorgastos.ui.screens.settings.SettingsScreen
 
 @Composable
 fun AppNavigation() {
@@ -47,7 +48,7 @@ fun AppNavigation() {
         currentDestination?.hasRoute<Categories>() == true -> "Categorías"
         currentDestination?.hasRoute<AddCategory>() == true -> "Nueva Categoría"
         currentDestination?.hasRoute<ExpenseDetail>() == true -> "Detalle del Gasto"
-        currentDestination?.hasRoute<Profile>() == true -> "Perfil"
+        currentDestination?.hasRoute<Settings>() == true -> "Configuraciones"
         currentDestination?.hasRoute<Reporteria>() == true -> "Reporte"
         else -> "Gestor de Gastos"
     }
@@ -58,7 +59,7 @@ fun AppNavigation() {
             currentDestination?.hasRoute<Reporteria>() == false
 
     val showBottomBar = currentDestination?.hasRoute<AddExpense>() == false &&
-            currentDestination?.hasRoute<AddCategory>() == false && currentDestination?.hasRoute<Profile>() == false
+            currentDestination?.hasRoute<AddCategory>() == false && currentDestination?.hasRoute<Settings>() == false
 
 
     Scaffold(
@@ -67,7 +68,7 @@ fun AppNavigation() {
                 title = currentTitle,
                 canNavigateBack = canNavigateBack,
                 navigateUp = { navController.navigateUp() },
-                onProfileClick = { navController.navigate(Profile) }
+                onProfileClick = { navController.navigate(Settings) }
 
             )
         },
@@ -128,8 +129,8 @@ fun AppNavigation() {
                 )
             }
 
-            composable<Profile> {
-                ProfileScreen(
+            composable<Settings> {
+                SettingsScreen(
                     onBackClick = { navController.popBackStack() }
                 )
             }
