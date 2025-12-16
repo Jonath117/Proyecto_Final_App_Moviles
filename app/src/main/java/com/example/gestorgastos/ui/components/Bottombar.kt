@@ -2,7 +2,10 @@ package com.example.gestorgastos.ui.components
 
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
@@ -22,7 +25,8 @@ fun BottomNavBar(
     NavigationBar(
         containerColor = SoftLav,
         contentColor = SelectedIconColor,
-        tonalElevation = 8.dp
+        modifier = Modifier.shadow(elevation = 25.dp, shape = RectangleShape),
+        tonalElevation = 0.dp
     ) {
         items.forEach { item ->
 

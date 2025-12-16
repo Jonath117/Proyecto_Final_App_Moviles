@@ -11,6 +11,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
@@ -26,7 +28,7 @@ fun MyTopAppBar(
     val SoftLav = Color(0xFFECE4F4)
 
     CenterAlignedTopAppBar(
-        title = { Text(title, fontSize = 25.sp, fontWeight = FontWeight.Bold)  },
+        title = { Text(title, fontSize = 22.sp, fontWeight = FontWeight.Bold)  },
         colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
             containerColor = SoftLav,
             titleContentColor = Color.Black,
@@ -35,7 +37,7 @@ fun MyTopAppBar(
         ),
         windowInsets = WindowInsets.statusBars,
 
-        modifier = modifier,
+        modifier = modifier.shadow(elevation = 14.dp, shape = RectangleShape),
         navigationIcon = {
             if (canNavigateBack) {
                 IconButton(onClick = navigateUp) {
