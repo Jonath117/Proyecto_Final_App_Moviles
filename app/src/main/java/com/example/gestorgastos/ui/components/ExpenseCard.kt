@@ -1,78 +1,30 @@
 package com.example.gestorgastos.ui.components
 
-import android.R.color.black
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoneyOff
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.gestorgastos.data.ExpenseRepository
 import com.example.gestorgastos.domain.model.ExpenseItem
-import androidx.compose.ui.text.style.TextOverflow
 
-//@Composable
-//fun ExpenseCard(item: ExpenseItem, backgroundColor: Color) {
-//    Card(
-//        shape = RoundedCornerShape(20.dp),
-//        colors = CardDefaults.cardColors(containerColor = backgroundColor),
-//        modifier = Modifier.fillMaxWidth().height(80.dp),
-//        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-//    ) {
-//        Row(
-//            modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),
-//            verticalAlignment = Alignment.CenterVertically,
-//            horizontalArrangement = Arrangement.SpaceBetween
-//        ) {
-//            Row(verticalAlignment = Alignment.CenterVertically) {
-//                Icon(
-//                    imageVector = item.icon,
-//                    contentDescription = null,
-//                    modifier = Modifier.size(32.dp),
-//                    tint = item.color
-//                )
-//                Spacer(modifier = Modifier.width(16.dp))
-//                Text(
-//                    text = item.title,
-//                    fontWeight = FontWeight.SemiBold,
-//                    fontSize = 16.sp
-//                )
-//            }
-//            Text(
-//                text = item.amount,
-//                fontWeight = FontWeight.Bold,
-//                fontSize = 16.sp
-//            )
-//        }
-//    }
-//}
-//
 @Composable
-fun ExpenseItemCard(item: ExpenseItem, backgroundColor: Color, onClick: () -> Unit) {
-
+fun ExpenseItemCard(
+    item: ExpenseItem,
+    backgroundColor: Color,
+    onClick: () -> Unit
+) {
+    // Buscamos la categoría para obtener el icono y color real
     val category = ExpenseRepository.getCategoryByName(item.categoryName)
-
-    // Definimos valores por defecto si no se encuentra (por seguridad)
     val icon = category?.icon ?: Icons.Default.MoneyOff
     val iconColor = category?.color ?: Color(0xFF5E35B1)
 
@@ -80,39 +32,58 @@ fun ExpenseItemCard(item: ExpenseItem, backgroundColor: Color, onClick: () -> Un
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = backgroundColor),
         elevation = CardDefaults.cardElevation(0.dp),
-        modifier = Modifier.fillMaxWidth().height(70.dp).clickable { onClick() }
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(80.dp)
+            .clickable { onClick() }
     ) {
         Row(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(horizontal = 16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                // Icono (Podrías hacerlo dinámico según la categoría)
-                Icon(
-                    imageVector = icon,
-                    contentDescription = null,
-                    tint = iconColor,
-                    modifier = Modifier.size(32.dp)
+            // 1. ICONO (Izquierda)
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = iconColor,
+                modifier = Modifier.size(42.dp)
+            )
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            // 2. COLUMNA CENTRAL (Texto y Categoría)
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.Center
+            ) {
+                // Título del Gasto
+                Text(
+                    text = item.title,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp,
+                    color = Color.Black,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
-                Spacer(modifier = Modifier.width(16.dp))
-                Column {
-                    Text(
-                        text = item.title,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp,
-                        color = Color.Black
-                    )
-                    Text(
-                        text = item.categoryName,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color.Gray
-                    )
-                }
+
+                // Nombre de Categoría
+                Text(
+                    text = item.categoryName,
+                    style = MaterialTheme.typography.bodySmall,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 13.sp,
+                    color = Color.Blue,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.padding(top = 5.dp)
+                )
             }
-            // Precio
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            // 3. PRECIO
             Text(
                 text = "$${item.amount}",
                 fontWeight = FontWeight.Bold,

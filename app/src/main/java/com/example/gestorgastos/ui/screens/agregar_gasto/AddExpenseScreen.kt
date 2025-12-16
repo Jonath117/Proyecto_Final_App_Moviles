@@ -279,6 +279,8 @@ fun AddExpenseScreen(
             }
         }
 
+        Spacer(modifier = Modifier.height(16.dp))
+
         LabeledTextField(
             label = "Detalle",
             value = viewModel.detail,
