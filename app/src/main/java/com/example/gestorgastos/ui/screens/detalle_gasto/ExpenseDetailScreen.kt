@@ -53,7 +53,7 @@ fun ExpenseDetailScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         if (expense == null) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -94,7 +94,7 @@ fun ExpenseDetailScreen(
                         text = expense.categoryName,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Light,
-                        color = Color.Black
+                        color = MaterialTheme.colorScheme.onBackground
                     )
                 }
 
@@ -106,7 +106,7 @@ fun ExpenseDetailScreen(
                     text = formatDateFull(expense.date),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Light,
-                    color = Color.Black
+                    color = MaterialTheme.colorScheme.onBackground
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -117,7 +117,7 @@ fun ExpenseDetailScreen(
                     text = expense.title,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Light,
-                    color = Color.Black
+                    color = MaterialTheme.colorScheme.onBackground
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -128,7 +128,7 @@ fun ExpenseDetailScreen(
                     text = String.format("%.2f", expense.amount),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Light,
-                    color = Color.Black
+                    color = MaterialTheme.colorScheme.onBackground
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
@@ -172,20 +172,6 @@ fun ExpenseDetailScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                 ) {
-                    // Botón Eliminar
-//                    Button(
-//                        onClick = {
-//                            ExpenseRepository.deleteExpense(expenseId)
-//                            onBackClick()
-//                        },
-//                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFEF5350)),
-//                        modifier = Modifier.weight(1f), // Ocupa 50% del ancho
-//                        shape = RoundedCornerShape(12.dp)
-//                    ) {
-//                        Icon(Icons.Default.Delete, contentDescription = null)
-//                        Spacer(modifier = Modifier.width(8.dp))
-//                        Text("Eliminar")
-//                    }
 
                     MyButton(
                         text = "Eliminar",
@@ -196,20 +182,9 @@ fun ExpenseDetailScreen(
                         icon = Icons.Default.Delete,
                         containerColor = Color(0xFFEF5350),
                         modifier = Modifier.weight(1f),
-                        enabled = true
-                    )
+                        enabled = true,
 
-                    // Botón Editar
-//                    Button(
-//                        onClick = { onEditClick(expenseId) },
-//                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF7E57C2)),
-//                        modifier = Modifier.weight(1f),
-//                        shape = RoundedCornerShape(12.dp)
-//                    ) {
-//                        Icon(Icons.Default.Edit, contentDescription = null)
-//                        Spacer(modifier = Modifier.width(8.dp))
-//                        Text("Editar")
-//                    }
+                    )
 
                     MyButton(
                         text = "Editar",
@@ -220,8 +195,6 @@ fun ExpenseDetailScreen(
                         enabled = true
                     )
                 }
-
-
                 Spacer(modifier = Modifier.height(20.dp))
             }
 
@@ -269,7 +242,7 @@ fun DetailLabel(text: String) {
         text = text,
         fontSize = 14.sp,
         fontWeight = FontWeight.Bold,
-        color = Color.Black,
+        color = MaterialTheme.colorScheme.onBackground,
         modifier = Modifier.padding(bottom = 8.dp)
     )
 }

@@ -6,6 +6,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -27,7 +28,8 @@ fun PieChart(
     data: List<CategoryReportItem>,
     radiusOuter: Dp = 100.dp,
     chartBarWidth: Dp = 20.dp,
-    totalAmount: Double
+    totalAmount: Double,
+    color: Color = MaterialTheme.colorScheme.onBackground
 ) {
     val totalValue = data.sumOf { it.totalAmount }
 
@@ -70,7 +72,7 @@ fun PieChart(
             text = "$${String.format("%.0f", totalAmount)}",
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.Black
+            color = MaterialTheme.colorScheme.onBackground
         )
     }
 }

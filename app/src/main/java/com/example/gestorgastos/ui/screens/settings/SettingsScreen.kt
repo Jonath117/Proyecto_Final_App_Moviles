@@ -33,7 +33,7 @@ fun SettingsScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.background)
     ) {
 
         Column(modifier = Modifier.padding(24.dp)) {
@@ -41,7 +41,7 @@ fun SettingsScreen(
                 text = "Apariencia",
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.Black
+                color = MaterialTheme.colorScheme.onBackground
             )
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -93,7 +93,7 @@ fun ThemeOptionItem(
             text = title,
             fontSize = 16.sp,
             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-            color = if (isSelected) Color(0xFF7E57C2) else Color.Black
+            color = if (isSelected) Color(0xFF7E57C2) else MaterialTheme.colorScheme.onBackground
         )
         Spacer(modifier = Modifier.weight(1f))
         if (isSelected) {

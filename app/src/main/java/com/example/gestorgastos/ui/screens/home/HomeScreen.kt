@@ -56,7 +56,7 @@ fun HomeScreen(
             modifier = modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .background(Color.White)
+                .background(MaterialTheme.colorScheme.background)
         ) {
 
             Spacer(modifier = Modifier.height(16.dp))

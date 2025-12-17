@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -32,7 +33,7 @@ fun ReporteriaScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.background)
     ) {
 
         if (reportData.isEmpty()) {
@@ -52,7 +53,7 @@ fun ReporteriaScreen(
                     ) {
                         PieChart(
                             data = reportData,
-                            totalAmount = totalSpent
+                            totalAmount = totalSpent,
                         )
                     }
                 }
@@ -63,7 +64,7 @@ fun ReporteriaScreen(
                         text = "Detalle por Categoría",
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color.Black,
+                        color = MaterialTheme.colorScheme.onBackground,
                         modifier = Modifier.padding(vertical = 10.dp)
                     )
                 }
@@ -96,10 +97,10 @@ fun CategoryRow(item: CategoryReportItem) {
             Spacer(modifier = Modifier.width(12.dp))
             // Nombre y porcentaje
             Column {
-                Text(text = item.name, fontWeight = FontWeight.SemiBold, fontSize = 16.sp, color = Color.Black)
+                Text(text = item.name, fontWeight = FontWeight.SemiBold, fontSize = 16.sp, color = MaterialTheme.colorScheme.onBackground)
                 Text(
                     text = "${String.format("%.1f", item.percentage * 100)}%",
-                    color = Color.Black,
+                    color = MaterialTheme.colorScheme.onBackground,
                     fontWeight = FontWeight.Light,
                     fontSize = 12.sp
                 )
@@ -108,7 +109,7 @@ fun CategoryRow(item: CategoryReportItem) {
         // Monto
         Text(
             text = "$${String.format("%.2f", item.totalAmount)}",
-            color = Color.Black,
+            color = MaterialTheme.colorScheme.onBackground,
             fontWeight = FontWeight.Bold,
             fontSize = 16.sp
         )

@@ -45,8 +45,10 @@ import java.util.Locale
 
 import java.util.TimeZone
 import android.Manifest
+import android.R
 import androidx.compose.ui.platform.LocalContext
 import com.example.gestorgastos.ui.components.MyButton
+import okio.blackholeSink
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -124,7 +126,7 @@ fun AddExpenseScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.background)
             .verticalScroll(scrollState)
             .padding(20.dp)
     ) {
@@ -150,7 +152,7 @@ fun AddExpenseScreen(
             text = "Categorías",
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.Black
+            color = MaterialTheme.colorScheme.onBackground
         )
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -216,7 +218,7 @@ fun AddExpenseScreen(
                     imageVector = Icons.Default.CalendarMonth,
                     contentDescription = "Seleccionar fecha",
                     modifier = Modifier.size(32.dp),
-                    tint = Color.Black
+                    tint = MaterialTheme.colorScheme.onBackground
                 )
             }
         }
@@ -224,7 +226,7 @@ fun AddExpenseScreen(
         Spacer(modifier = Modifier.height(24.dp))
 
 
-        Text("Adjuntar Recibo (Máx 2)", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = Color.Black)
+        Text("Adjuntar Recibo (Máx 2)", fontSize = 14.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground)
         Spacer(modifier = Modifier.height(8.dp))
 
         Row(

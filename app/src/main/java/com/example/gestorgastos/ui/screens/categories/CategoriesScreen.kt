@@ -60,7 +60,7 @@ fun CategoriesScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.background)
     ) {
 
         Spacer(modifier = Modifier.height(20.dp))
@@ -87,7 +87,7 @@ fun CategoriesScreen(
 @Composable
 fun CategoryViewerItem(category: Category, onLongClick: () -> Unit) {
     Card(
-        colors = CardDefaults.cardColors(containerColor = Color(0xFFFAFAFA)),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(2.dp),
         modifier = Modifier
@@ -126,7 +126,7 @@ fun CategoryViewerItem(category: Category, onLongClick: () -> Unit) {
                 text = category.name,
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.sp,
-                color = Color.Black
+                color = MaterialTheme.colorScheme.onBackground
             )
         }
     }

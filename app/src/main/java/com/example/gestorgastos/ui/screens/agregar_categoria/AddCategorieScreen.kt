@@ -39,7 +39,7 @@ fun AddCategoryScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(MaterialTheme.colorScheme.background)
             .padding(20.dp)
     ) {
 
@@ -138,32 +138,6 @@ fun AddCategoryScreen(
                 containerColor = Color.LightGray,
                 enabled = true
             )
-
-//            Button(
-//                onClick = onBackClick,
-//                colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
-//                modifier = Modifier.weight(1f)
-//            ) {
-//                Text("Cancelar", color = Color.Black)
-//            }
-
-//            Button(
-//                onClick = {
-//                    viewModel.validateOnSubmit()
-//                    if (viewModel.isFormValid()) {
-//                        viewModel.saveCategory()
-//                        onSaveSuccess()
-//                    }
-//                },
-//                enabled = viewModel.isFormValid(),
-//
-//                colors = ButtonDefaults.buttonColors(containerColor = PurpleButtonColor),
-//                modifier = Modifier.weight(1f)
-//            ) {
-//                Icon(Icons.Default.Check, contentDescription = null)
-//                Spacer(modifier = Modifier.width(8.dp))
-//                Text("Guardar")
-//            }
 
             MyButton(
                 text = "Guardar",

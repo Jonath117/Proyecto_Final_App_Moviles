@@ -20,8 +20,8 @@ fun MyButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     icon: ImageVector? = null,
-    containerColor: Color = Color(0xFF7E57C2),
-    contentColor: Color = Color.White,
+    containerColor: Color = MaterialTheme.colorScheme.primary,
+    contentColor: Color = MaterialTheme.colorScheme.onPrimary,
     enabled: Boolean = false
 ) {
     val disabledContainerColor = Color(0xFFE0E0E0)
