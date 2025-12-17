@@ -23,4 +23,10 @@ class ExpenseDetailViewModel : ViewModel() {
             }
         }
     }
+
+    fun deleteExpense(id: String) {
+        viewModelScope.launch {
+            ExpenseRepository.deleteExpense(id)
+        }
+    }
 }

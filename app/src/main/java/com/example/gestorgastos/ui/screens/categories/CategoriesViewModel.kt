@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.gestorgastos.data.ExpenseRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 class CategoriesViewModel : ViewModel() {
     // Este ViewModel solo sirve para "leer" la lista de categorías del repositorio
@@ -13,4 +14,10 @@ class CategoriesViewModel : ViewModel() {
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = emptyList()
     )
+
+    fun deleteCategory(id: String) {
+        viewModelScope.launch {
+            ExpenseRepository.deleteCategory(id)
+        }
+    }
 }

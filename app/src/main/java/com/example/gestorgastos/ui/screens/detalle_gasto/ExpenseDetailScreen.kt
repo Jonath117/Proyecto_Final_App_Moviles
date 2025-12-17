@@ -32,6 +32,8 @@ import com.example.gestorgastos.ui.components.MyButton
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import com.example.gestorgastos.ui.screens.detalle_gasto.ExpenseDetailViewModel
+
 
 @Composable
 fun ExpenseDetailScreen(
@@ -134,14 +136,14 @@ fun ExpenseDetailScreen(
                 Spacer(modifier = Modifier.height(24.dp))
 
                 // Recibo / Fotos
-                if (expense.imageUris.isNotEmpty()) {
+                if (expense.safeImages.isNotEmpty()) {
                     DetailLabel("Comprobante / Recibo")
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        expense.imageUris.forEach { uriString ->
+                        expense.safeImages.forEach { uriString ->
                             Box(
                                 modifier = Modifier
                                     .height(120.dp)
@@ -159,7 +161,7 @@ fun ExpenseDetailScreen(
                             }
                         }
 
-                        if (expense.imageUris.size == 1) {
+                        if (expense.safeImages.size == 1) {
                             Spacer(modifier = Modifier.weight(1f))
                         }
                     }
@@ -176,7 +178,7 @@ fun ExpenseDetailScreen(
                     MyButton(
                         text = "Eliminar",
                         onClick = {
-                            ExpenseRepository.deleteExpense(expenseId)
+                            viewModel.deleteExpense(expenseId)
                             onBackClick()
                         },
                         icon = Icons.Default.Delete,

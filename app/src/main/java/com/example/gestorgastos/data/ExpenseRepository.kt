@@ -1,73 +1,250 @@
 package com.example.gestorgastos.data
 
+import android.content.Context
+import android.net.Uri
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import com.example.gestorgastos.domain.model.Category
 import com.example.gestorgastos.domain.model.ExpenseItem
+import io.github.jan.supabase.postgrest.from
+import io.github.jan.supabase.storage.storage
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.withContext
 import java.util.UUID
+import android.util.Log
+
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerialName
 
 object ExpenseRepository {
+
+    private const val TAG = "SupabaseRepo"
 
     private val _expenses = MutableStateFlow<List<ExpenseItem>>(emptyList())
     val expenses: StateFlow<List<ExpenseItem>> = _expenses.asStateFlow()
 
-    fun addExpense(expense: ExpenseItem) {
-        _expenses.update { it + expense }
-    }
-
-    private val _categories = MutableStateFlow<List<Category>>(
-        listOf(
-            Category("1", "Transporte", Icons.Default.DirectionsBus, Color(0xFF4FC3F7)),
-            Category("2", "Salud", Icons.Default.Favorite, Color(0xFFEF5350)),
-            Category("3", "Casa", Icons.Default.Home, Color(0xFF66BB6A)),
-            Category("4", "Regalos", Icons.Default.CardGiftcard, Color(0xFF8D6E63)),
-            Category("5", "Comida", Icons.Default.Restaurant, Color(0xFFFFA726)),
-            Category("6", "Familia", Icons.Default.FamilyRestroom, Color(0xFFAB47BC)),
-            Category("7", "Ocio", Icons.Default.Weekend, Color(0xFF78909C))
-        )
-    )
+    private val _categories = MutableStateFlow<List<Category>>(emptyList())
     val categories: StateFlow<List<Category>> = _categories.asStateFlow()
 
-    fun addCategory(category: Category) {
-        val currentList = _categories.value.toMutableList()
-        currentList.add(category)
-        _categories.value = currentList
+    private val defaultCategoriesList = listOf(
+        Category(UUID.randomUUID().toString(), "Transporte", Icons.Default.DirectionsBus, Color(0xFF4FC3F7)),
+        Category(UUID.randomUUID().toString(), "Salud", Icons.Default.Favorite, Color(0xFFEF5350)),
+        Category(UUID.randomUUID().toString(), "Casa", Icons.Default.Home, Color(0xFF66BB6A)),
+        Category(UUID.randomUUID().toString(), "Regalos", Icons.Default.CardGiftcard, Color(0xFF8D6E63)),
+        Category(UUID.randomUUID().toString(), "Comida", Icons.Default.Restaurant, Color(0xFFFFA726)),
+        Category(UUID.randomUUID().toString(), "Familia", Icons.Default.FamilyRestroom, Color(0xFFAB47BC)),
+        Category(UUID.randomUUID().toString(), "Ocio", Icons.Default.Weekend, Color(0xFF78909C))
+    )
+
+    suspend fun fetchAllData() {
+        Log.d(TAG, "Iniciando descarga de datos...")
+        getExpenses()
+        getCategories()
     }
 
-    fun getCategoryByName(name: String): Category? {
-        return _categories.value.find { it.name == name }
-    }
-
-    fun deleteExpense(expenseId: String) {
-        val currentList = _expenses.value.toMutableList()
-        currentList.removeIf { it.id == expenseId }
-        _expenses.value = currentList
-    }
-
-    // ACTUALIZAR GASTO
-    fun updateExpense(updatedItem: ExpenseItem) {
-        val currentList = _expenses.value.toMutableList()
-        val index = currentList.indexOfFirst { it.id == updatedItem.id }
-        if (index != -1) {
-            currentList[index] = updatedItem
-            _expenses.value = currentList
+    suspend fun getExpenses() {
+        withContext(Dispatchers.IO) {
+            try {
+                val list = SupabaseClient.client.from("expenses")
+                    .select()
+                    .decodeList<ExpenseItem>()
+                _expenses.value = list
+                Log.d(TAG, "Gastos descargados: ${list.size}")
+            } catch (e: Exception) {
+                Log.e(TAG, "Error al bajar gastos: ${e.message}")
+                e.printStackTrace()
+            }
         }
     }
 
-    // OBTENER GASTO POR ID
+    // CREATE (CON TRY CATCH AHORA)
+    suspend fun addExpense(expense: ExpenseItem) {
+        withContext(Dispatchers.IO) {
+            try {
+                SupabaseClient.client.from("expenses").insert(expense)
+                Log.d(TAG, "Gasto subido correctamente")
+                getExpenses()
+            } catch (e: Exception) {
+                Log.e(TAG, "Error al subir gasto: ${e.message}")
+            }
+        }
+    }
+
+    // ... (Mantén deleteExpense y updateExpense igual pero agrégales try-catch como arriba) ...
+
+    suspend fun getCategories() {
+        withContext(Dispatchers.IO) {
+            try {
+                Log.d(TAG, "Intentando bajar categorías...")
+                val dtos = SupabaseClient.client.from("categories")
+                    .select()
+                    .decodeList<CategoryDto>()
+
+                Log.d(TAG, "Categorías encontradas en nube: ${dtos.size}")
+
+                if (dtos.isEmpty()) {
+                    Log.d(TAG, "Nube vacía. Subiendo defaults...")
+                    seedDefaultCategories()
+                    getCategories() // Reintentar
+                } else {
+                    val domainList = dtos.map { dto ->
+                        // Convertir Int/Long a Color de forma segura
+                        val colorInt = dto.colorHex.toInt()
+                        Category(
+                            id = dto.id,
+                            name = dto.name,
+                            icon = getIconByName(dto.iconName),
+                            color = Color(colorInt)
+                        )
+                    }
+                    _categories.value = domainList
+                    Log.d(TAG, "Categorías actualizadas en UI")
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "CRITICAL ERROR en getCategories: ${e.message}")
+                e.printStackTrace()
+            }
+        }
+    }
+
+    private suspend fun seedDefaultCategories() {
+        try {
+            val dtosToUpload = defaultCategoriesList.map { category ->
+                CategoryDto(
+                    id = category.id,
+                    name = category.name,
+                    iconName = getNameByIcon(category.icon),
+                    colorHex = category.color.toArgb().toLong()
+                )
+            }
+            SupabaseClient.client.from("categories").insert(dtosToUpload)
+            Log.d(TAG, "Defaults subidos con éxito")
+        } catch (e: Exception) {
+            Log.e(TAG, "Error al subir defaults: ${e.message}")
+        }
+    }
+
+    suspend fun addCategory(category: Category) {
+        withContext(Dispatchers.IO) {
+            try {
+                Log.d(TAG, "Subiendo nueva categoría: ${category.name}")
+                val dto = CategoryDto(
+                    id = category.id,
+                    name = category.name,
+                    iconName = getNameByIcon(category.icon),
+                    colorHex = category.color.toArgb().toLong()
+                )
+                SupabaseClient.client.from("categories").insert(dto)
+                Log.d(TAG, "Categoría creada éxito")
+                getCategories()
+            } catch (e: Exception) {
+                // AQUÍ ES DONDE EVITAMOS EL CRASH
+                Log.e(TAG, "Error al crear categoría: ${e.message}")
+                e.printStackTrace()
+            }
+        }
+    }
+
+
+
+
+    // DELETE
+    suspend fun deleteExpense(expenseId: String) {
+        withContext(Dispatchers.IO) {
+            SupabaseClient.client.from("expenses").delete {
+                filter {
+                    eq("id", expenseId)
+                }
+            }
+            getExpenses()
+        }
+    }
+
+    // UPDATE
+    suspend fun updateExpense(updatedItem: ExpenseItem) {
+        withContext(Dispatchers.IO) {
+            SupabaseClient.client.from("expenses").update(updatedItem) {
+                filter {
+                    eq("id", updatedItem.id)
+                }
+            }
+            getExpenses()
+        }
+    }
+
+    // STORAGE (Fotos)
+    suspend fun uploadImage(context: Context, uri: Uri): String {
+        return withContext(Dispatchers.IO) {
+            val bucket = SupabaseClient.client.storage.from("receipts")
+            val fileName = "${UUID.randomUUID()}.jpg"
+            val bytes = context.contentResolver.openInputStream(uri)?.use { it.readBytes() }
+                ?: throw Exception("No se pudo leer la imagen")
+
+            bucket.upload(fileName, bytes)
+            bucket.publicUrl(fileName)
+        }
+    }
+
     fun getExpenseById(id: String): ExpenseItem? {
         return _expenses.value.find { it.id == id }
     }
 
-    // ELIMINAR CATEGORÍA
-    fun deleteCategory(categoryId: String) {
-        val currentList = _categories.value.toMutableList()
-        currentList.removeIf { it.id == categoryId }
-        _categories.value = currentList
+    // DELETE
+    suspend fun deleteCategory(categoryId: String) {
+        withContext(Dispatchers.IO) {
+            SupabaseClient.client.from("categories").delete {
+                filter {
+                    eq("id", categoryId)
+                }
+            }
+            getCategories() // Recargamos
+        }
+    }
+
+
+    fun getCategoryByName(name: String): Category? {
+        return _categories.value.find { it.name == name }
     }
 }
+
+val iconMap = mapOf(
+    "DirectionsBus" to Icons.Default.DirectionsBus,
+    "Favorite" to Icons.Default.Favorite,
+    "Home" to Icons.Default.Home,
+    "CardGiftcard" to Icons.Default.CardGiftcard,
+    "Restaurant" to Icons.Default.Restaurant,
+    "FamilyRestroom" to Icons.Default.FamilyRestroom,
+    "Weekend" to Icons.Default.Weekend,
+    "Add" to Icons.Default.Add,
+    "ShoppingCart" to Icons.Default.ShoppingCart,
+    "Flight" to Icons.Default.Flight,
+    "SportsEsports" to Icons.Default.SportsEsports,
+    "School" to Icons.Default.School,
+    "Work" to Icons.Default.Work,
+    "Pets" to Icons.Default.Pets,
+    "LocalHospital" to Icons.Default.LocalHospital,
+    "LocalCafe" to Icons.Default.LocalCafe,
+    "MoneyOff" to Icons.Default.MoneyOff // Default
+)
+
+fun getIconByName(name: String): androidx.compose.ui.graphics.vector.ImageVector {
+    return iconMap[name] ?: Icons.Default.MoneyOff
+}
+
+fun getNameByIcon(icon: androidx.compose.ui.graphics.vector.ImageVector): String {
+    return iconMap.entries.find { it.value == icon }?.key ?: "MoneyOff"
+}
+
+@Serializable
+data class CategoryDto(
+    val id: String,
+    val name: String,
+    @SerialName("icon_name") val iconName: String,
+    @SerialName("color_hex") val colorHex: Long
+)

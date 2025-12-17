@@ -5,11 +5,19 @@ import androidx.lifecycle.viewModelScope
 import com.example.gestorgastos.data.ExpenseRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 class HomeViewModel : ViewModel() {
+
     val expenses = ExpenseRepository.expenses.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = emptyList()
     )
+
+    init {
+        viewModelScope.launch {
+            ExpenseRepository.fetchAllData()
+        }
+    }
 }

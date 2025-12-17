@@ -46,6 +46,7 @@ import java.util.Locale
 import java.util.TimeZone
 import android.Manifest
 import android.R
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
 import com.example.gestorgastos.ui.components.MyButton
 import okio.blackholeSink
@@ -58,7 +59,14 @@ fun AddExpenseScreen(
     onSaveSuccess: () -> Unit,
     onCreateCategoryClick: () -> Unit
 ) {
-    val purpleButtonColor = Color(0xFF7E57C2)
+
+    LaunchedEffect(viewModel.isSaved) {
+        if (viewModel.isSaved) {
+            onSaveSuccess()
+        }
+    }
+
+
 
     val scrollState = rememberScrollState()
 
@@ -316,35 +324,12 @@ fun AddExpenseScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-//        Button(
-//            onClick = {
-//                viewModel.saveExpense()
-//                if(viewModel.isFormValid()){
-//                    onSaveSuccess()
-//                }
-//            },
-//
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .height(56.dp),
-//            colors = ButtonDefaults.buttonColors(containerColor = purpleButtonColor),
-//            shape = RoundedCornerShape(16.dp),
-//            elevation = ButtonDefaults.buttonElevation(8.dp)
-//        ) {
-//            Icon(Icons.Default.Add, contentDescription = null)
-//            Spacer(modifier = Modifier.width(8.dp))
-//            Text("Añadir gasto", fontSize = 18.sp, fontWeight = FontWeight.Bold)
-//        }
-
         MyButton(
-            text = "Añadir gasto",
+            text = if (viewModel.isLoading) "Guardando..." else "Guardar",
+            enabled = !viewModel.isLoading,
             onClick = {
-                viewModel.saveExpense()
-                if (viewModel.isFormValid()) {
-                    onSaveSuccess()
-                }
+                viewModel.saveExpense(context)
             },
-            enabled = viewModel.isFormValid(),
             icon = Icons.Default.Add,
         )
 

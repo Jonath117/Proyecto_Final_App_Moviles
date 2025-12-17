@@ -32,12 +32,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.gestorgastos.data.ExpenseRepository
 import com.example.gestorgastos.domain.model.Category
+import kotlinx.coroutines.launch
 import java.util.UUID
 
 class AddCategoryViewModel : ViewModel() {
     var categoryName by mutableStateOf("")
+        private set
+
+    var isSaved by mutableStateOf(false)
+        private set
+
+    // Variable para controlar loading (opcional pero recomendado)
+    var isLoading by mutableStateOf(false)
         private set
 
     val availableColors = listOf(
@@ -126,18 +135,28 @@ class AddCategoryViewModel : ViewModel() {
 
     fun saveCategory() {
         if (categoryName.isNotBlank()) {
-            val newCategory = Category(
-                id = UUID.randomUUID().toString(),
-                name = categoryName,
-                icon = selectedIcon,  // <--- Usamos el icono elegido
-                color = selectedColor // <--- Usamos el color elegido
-            )
 
-            ExpenseRepository.addCategory(newCategory)
+            viewModelScope.launch {
+                isLoading = true // Bloqueamos botón
+                try {
+                    val newCategory = Category(
+                        id = UUID.randomUUID().toString(),
+                        name = categoryName,
+                        icon = selectedIcon,
+                        color = selectedColor
+                    )
 
-            categoryName = ""
-            selectedColor = availableColors[0]
-            selectedIcon = availableIcons[0]
+
+                    ExpenseRepository.addCategory(newCategory)
+
+                    isSaved = true
+
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                } finally {
+                    isLoading = false
+                }
+            }
         }
     }
 }

@@ -15,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,6 +36,13 @@ fun AddCategoryScreen(
 ) {
     val LightPurpleBg = Color(0xFFF3E5F5)
     val PurpleButtonColor = Color(0xFF7E57C2)
+
+    LaunchedEffect(viewModel.isSaved) {
+        if (viewModel.isSaved) {
+            onSaveSuccess()
+        }
+    }
+
 
     Column(
         modifier = Modifier
@@ -143,11 +151,7 @@ fun AddCategoryScreen(
                 text = "Guardar",
                 enabled = true,
                 onClick = {
-                    viewModel.validateOnSubmit()
-                    if (viewModel.isFormValid()) {
-                        viewModel.saveCategory()
-                        onSaveSuccess()
-                    }
+                    viewModel.saveCategory()
                 },
                 icon = Icons.Default.Check,
                 containerColor = PurpleButtonColor,

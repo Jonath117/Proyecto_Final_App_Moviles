@@ -45,7 +45,8 @@ fun CategoriesScreen(
             confirmButton = {
                 Button(
                     onClick = {
-                        ExpenseRepository.deleteCategory(categoryToDelete!!.id)
+                        //ExpenseRepository.deleteCategory(categoryToDelete!!.id)
+                        viewModel.deleteCategory(categoryToDelete!!.id)
                         categoryToDelete = null
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Red)

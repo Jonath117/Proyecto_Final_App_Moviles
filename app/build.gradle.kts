@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    id("org.jetbrains.kotlin.plugin.serialization")
+    id("org.jetbrains.kotlin.plugin.serialization") version "2.2.21"
 }
 
 android {
@@ -56,6 +56,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.litert.support.api)
     implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.camera.camera2.pipe)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -73,4 +74,17 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
 
     implementation("io.coil-kt:coil-compose:2.7.0")
+
+
+    // SUPABASE (BOM para manejar versiones)
+    implementation(platform("io.github.jan-tennert.supabase:bom:3.2.6"))
+    implementation("io.github.jan-tennert.supabase:postgrest-kt") // Base de datos
+    implementation("io.github.jan-tennert.supabase:storage-kt")   // Fotos
+    implementation("io.github.jan-tennert.supabase:realtime-kt")  // (Opcional) Cambios en vivo
+
+    // KTOR (Cliente HTTP necesario para Supabase)
+    implementation("io.ktor:ktor-client-android:3.0.0")
+
+    // SERIALIZACIÓN (Para convertir tus objetos a JSON)
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
 }

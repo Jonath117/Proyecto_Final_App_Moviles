@@ -1,22 +1,23 @@
 package com.example.gestorgastos.ui.screens.add_expense
 
+import android.content.Context
 import android.net.Uri
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.gestorgastos.domain.model.ExpenseItem
 import com.example.gestorgastos.data.ExpenseRepository
-import java.util.UUID
 import com.example.gestorgastos.domain.model.Category
+import com.example.gestorgastos.domain.model.ExpenseItem
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
+import java.util.UUID
 
 class AddExpenseViewModel : ViewModel() {
 
@@ -35,6 +36,16 @@ class AddExpenseViewModel : ViewModel() {
 
     private var editingExpenseId: String? = null
 
+    var amountError by mutableStateOf<String?>(null)
+        private set
+
+    var isSaved by mutableStateOf(false)
+        private set
+
+    var isLoading by mutableStateOf(false)
+        private set
+
+
     val categories = ExpenseRepository.categories.map { list ->
         list + Category(
             id = "create_new",
@@ -48,10 +59,6 @@ class AddExpenseViewModel : ViewModel() {
         initialValue = emptyList()
     )
 
-
-    var amountError by mutableStateOf<String?>(null)
-        private set
-
     var hasInteracted by mutableStateOf(false)
         private set
 
@@ -61,81 +68,79 @@ class AddExpenseViewModel : ViewModel() {
     var isSuccess by mutableStateOf(false)
         private set
 
-
     fun onAmountChange(text: String) { amount = text }
     fun onDetailChange(text: String) { detail = text }
     fun onCategorySelected(category: Category) { selectedCategory = category }
+    fun onDateChange(newDate: Long) { dateMillis = newDate }
 
-//    fun saveExpense() {
-//        if (amount.isNotBlank() && selectedCategory != null) {
-//            val newItem = ExpenseItem(
-//                id = UUID.randomUUID().toString(),
-//                title = detail.ifBlank { selectedCategory!!.name },
-//                amount = amount.toDoubleOrNull() ?: 0.0,
-//                categoryName = selectedCategory!!.name,
-//                date = dateMillis,
-//                imageUris = selectedImages.map { it.toString() }
-//            )
-//            ExpenseRepository.addExpense(newItem)
-//
-//            // Limpiar
-//            amount = ""
-//            detail = ""
-//            selectedCategory = null
-//            selectedImages = emptyList()
-//        }
-//    }
-
-    fun saveExpense() {
+    fun saveExpense(context: Context) {
         hasInteracted = true
+
+        amountError = null
         errorMessage = null
         isSuccess = false
 
-        when {
-            amount.isBlank() -> {
-                errorMessage = "Ingresa un monto"
-            }
+        if (amount.isBlank()) {
+            amountError = "Ingresa un monto"
+            return
+        }
+        val doubleAmount = amount.replace(",", ".").toDoubleOrNull()
+        if (doubleAmount == null || doubleAmount <= 0) {
+            amountError = "El monto debe ser mayor a 0"
+            return
+        }
 
-            amount.toDoubleOrNull() == null || amount.toDouble() <= 0 -> {
-                errorMessage = "El monto debe ser mayor a 0"
-            }
+        if (selectedCategory == null) {
+            errorMessage = "Selecciona una categoría"
+            return
+        }
+        viewModelScope.launch {
+            isLoading = true
+            try {
+                val finalImageUrls = selectedImages.map { uri ->
+                    val uriString = uri.toString()
+                    if (uriString.startsWith("http")) uriString
+                    else ExpenseRepository.uploadImage(context, uri)
+                }
 
-            selectedCategory == null -> {
-                errorMessage = "Selecciona una categoría"
-            }
-            else -> {
                 val finalId = editingExpenseId ?: UUID.randomUUID().toString()
 
                 val newItem = ExpenseItem(
                     id = finalId,
                     title = detail.ifBlank { selectedCategory!!.name },
-                    amount = amount.replace(",", ".").toDoubleOrNull() ?: 0.0,
+                    amount = doubleAmount,
                     categoryName = selectedCategory!!.name,
                     date = dateMillis,
-                    imageUris = selectedImages.map { it.toString() }
+                    imageUris = finalImageUrls
                 )
 
                 if (editingExpenseId == null) {
-                    ExpenseRepository.addExpense(newItem) // Crear nuevo
+                    ExpenseRepository.addExpense(newItem)
                 } else {
-                    ExpenseRepository.updateExpense(newItem) // Actualizar existente
+                    ExpenseRepository.updateExpense(newItem)
                 }
+
+                isSaved = true
                 isSuccess = true
                 clearForm()
+
+            } catch (e: Exception) {
+                errorMessage = "Error: ${e.message}"
+                e.printStackTrace()
+            } finally {
+                isLoading = false
             }
         }
     }
 
-    fun clearForm(){
+    fun clearForm() {
         amount = ""
         detail = ""
         selectedCategory = null
         selectedImages = emptyList()
         editingExpenseId = null
-    }
-
-    fun onDateChange(newDate: Long) {
-        dateMillis = newDate
+        hasInteracted = false
+        amountError = null
     }
 
     fun onImagesSelected(uris: List<Uri>) {
@@ -147,42 +152,25 @@ class AddExpenseViewModel : ViewModel() {
         selectedImages = selectedImages - uri
     }
 
-//    fun validateOnSubmit() {
-//        hasInteracted = true
-//        validateAmount()
-//    }
-//
-//    fun validateAmount(){
-//        amountError = when {
-//            amount.isBlank() -> "El monto no puede estar vacío"
-//            amount.toDoubleOrNull() == null -> "El monto debe ser un número válido"
-//            else -> null
-//        }
-//    }
-
     fun isFormValid(): Boolean {
         return amount.toDoubleOrNull() != null &&
                 amount.toDouble() > 0 &&
                 selectedCategory != null
     }
 
-    // NUEVA FUNCIÓN: Cargar datos si es edición
     fun loadExpenseIfEditing(id: String?) {
         if (id == null) return
 
+        // Intentamos obtenerlo del repositorio local (memoria) para rellenar rápido el formulario
         val expense = ExpenseRepository.getExpenseById(id) ?: return
 
-        // Rellenamos los campos con los datos existentes
         editingExpenseId = expense.id
         amount = expense.amount.toString().replace(".", ",")
         detail = expense.title
         dateMillis = expense.date
-
         selectedCategory = ExpenseRepository.getCategoryByName(expense.categoryName)
 
-        selectedImages = expense.imageUris.map { android.net.Uri.parse(it) }
+        // Convertimos las URLs (Strings) a URIs para que Coil las pueda mostrar
+        selectedImages = expense.safeImages.map { Uri.parse(it) }
     }
-
-
-
 }
