@@ -85,7 +85,7 @@ class AddCategoryViewModel : ViewModel() {
         Icons.Default.Receipt,
         Icons.Default.AccountBalance,
         Icons.Default.CreditCard,
-        Icons.Default.TrendingUp,
+        Icons.AutoMirrored.Filled.TrendingUp,
         Icons.Default.Build,
         Icons.Default.Phone,
         Icons.Default.Lightbulb,
@@ -134,7 +134,7 @@ class AddCategoryViewModel : ViewModel() {
         nameError == null && categoryName.isNotBlank()
 
     fun saveCategory() {
-        if (categoryName.isNotBlank()) {
+        if (categoryName.isNotBlank() && !isLoading) {
 
             viewModelScope.launch {
                 isLoading = true // Bloqueamos botón
@@ -145,8 +145,6 @@ class AddCategoryViewModel : ViewModel() {
                         icon = selectedIcon,
                         color = selectedColor
                     )
-
-
                     ExpenseRepository.addCategory(newCategory)
 
                     isSaved = true

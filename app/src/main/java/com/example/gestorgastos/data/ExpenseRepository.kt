@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
 import java.util.UUID
 import android.util.Log
+import androidx.compose.material.icons.automirrored.filled.TrendingUp
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerialName
@@ -213,26 +214,42 @@ object ExpenseRepository {
     }
 }
 
+
 val iconMap = mapOf(
     "DirectionsBus" to Icons.Default.DirectionsBus,
     "Favorite" to Icons.Default.Favorite,
-    "Home" to Icons.Default.Home,
     "CardGiftcard" to Icons.Default.CardGiftcard,
-    "Restaurant" to Icons.Default.Restaurant,
     "FamilyRestroom" to Icons.Default.FamilyRestroom,
     "Weekend" to Icons.Default.Weekend,
-    "Add" to Icons.Default.Add,
+
+    "Home" to Icons.Default.Home,
     "ShoppingCart" to Icons.Default.ShoppingCart,
+    "Restaurant" to Icons.Default.Restaurant,
+    "DirectionsCar" to Icons.Default.DirectionsCar,
     "Flight" to Icons.Default.Flight,
     "SportsEsports" to Icons.Default.SportsEsports,
+    "FitnessCenter" to Icons.Default.FitnessCenter,
     "School" to Icons.Default.School,
     "Work" to Icons.Default.Work,
     "Pets" to Icons.Default.Pets,
     "LocalHospital" to Icons.Default.LocalHospital,
     "LocalCafe" to Icons.Default.LocalCafe,
-    "MoneyOff" to Icons.Default.MoneyOff // Default
-)
+    "Terrain" to Icons.Default.Terrain,
+    "Explore" to Icons.Default.Explore,
+    "Hiking" to Icons.Default.Hiking,
+    "BeachAccess" to Icons.Default.BeachAccess,
+    "AttachMoney" to Icons.Default.AttachMoney,
+    "Receipt" to Icons.Default.Receipt,
+    "AccountBalance" to Icons.Default.AccountBalance,
+    "CreditCard" to Icons.Default.CreditCard,
+    "Build" to Icons.Default.Build,
+    "Phone" to Icons.Default.Phone,
+    "Lightbulb" to Icons.Default.Lightbulb,
 
+
+    "TrendingUp" to Icons.AutoMirrored.Filled.TrendingUp,
+    "MoneyOff" to Icons.Default.MoneyOff 
+)
 fun getIconByName(name: String): androidx.compose.ui.graphics.vector.ImageVector {
     return iconMap[name] ?: Icons.Default.MoneyOff
 }

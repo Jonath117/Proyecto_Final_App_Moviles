@@ -148,8 +148,8 @@ fun AddCategoryScreen(
             )
 
             MyButton(
-                text = "Guardar",
-                enabled = true,
+                text = if (viewModel.isLoading) "Guardando..." else "Guardar",
+                enabled = !viewModel.isLoading && viewModel.categoryName.isNotBlank(),
                 onClick = {
                     viewModel.saveCategory()
                 },
