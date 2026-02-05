@@ -37,7 +37,7 @@ fun ExpenseItemCard(
             .fillMaxWidth()
             .height(80.dp)
             .clickable { onClick() }
-            .shadow(elevation = 14.dp, shape = RoundedCornerShape(16.dp))
+            .shadow(elevation = 10.dp, shape = RoundedCornerShape(16.dp))
     ) {
         Row(
             modifier = Modifier

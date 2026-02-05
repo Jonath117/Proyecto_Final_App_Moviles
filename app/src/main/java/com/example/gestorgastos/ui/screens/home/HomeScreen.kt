@@ -48,7 +48,7 @@ fun HomeScreen(
                 Icon(Icons.Default.Add, contentDescription = "Agregar Gasto")
             }
         },
-        containerColor = Color.White
+        containerColor = MaterialTheme.colorScheme.background,
     ) { innerPadding ->
 
         // Contenido Principal
@@ -59,7 +59,7 @@ fun HomeScreen(
                 .background(MaterialTheme.colorScheme.background)
         ) {
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp).background(MaterialTheme.colorScheme.background))
 
             if (expenses.isEmpty()) {
                 Box(
