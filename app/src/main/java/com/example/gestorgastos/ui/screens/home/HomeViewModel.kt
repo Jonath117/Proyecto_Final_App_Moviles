@@ -20,4 +20,6 @@ class HomeViewModel : ViewModel() {
             ExpenseRepository.fetchAllData()
         }
     }
+
+
 }
